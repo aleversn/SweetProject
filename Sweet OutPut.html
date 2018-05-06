@@ -1,0 +1,71 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Sweet</title>
+<script type="text/javascript" src="http://code.jquery.com/jquery-latest.js"></script>
+<script type="text/javascript" src="js/sweet.js"></script>
+<link rel="stylesheet" href="css/sweet.css"/>
+</head>
+
+<body>
+<button class="sbutton">Light</button>
+<button class="sbutton blue">Dark</button>
+<button class="sbutton green">Dark</button>
+<button class="sbutton red">Dark</button>
+<button class="sbutton pink">Dark</button>
+<button class="sbutton brown">Dark</button>
+<button class="sbutton blue glass">Dark</button>
+<button class="sbutton green glass">Dark</button>
+<button class="sbutton red glass">Dark</button>
+<button class="sbutton pink glass">Dark</button>
+<button class="sbutton brown glass">Dark</button>
+<button class="sbutton dark">Dark</button>
+<div xControl="checkBox" xContent="OK"></div>
+<input xControl="searchBox"/>
+<div xControl="comboBox" style="width: 80px;">
+    <option>a</option>
+    <option>b</option>
+    <option>c</option>
+</div>
+<div xData="Sample">
+    <p>1</p>
+    <div xControl="template">
+        <p>{x:Binding name}</p>
+        <p>{x:Binding age}</p>
+    </div>
+    <p>2</p>
+</div>
+<div xDataGetUrl="http://localhost:57230/org/getclass">
+    <p>1</p>
+    <div xControl="template">
+        <p>{x:Binding name}</p>
+        <p>{x:Binding head}</p>
+    </div>
+    <p>2</p>
+</div>
+<div xControl="flipView">
+    <img alt="" src="res/10.jpg"/>
+    <img alt="" src="res/158.jpg"/>
+    <img alt="" src="res/159.jpg"/>
+</div>
+<div id="ss">
+    <p>Item</p>
+</div>
+<script>
+    var objs = [
+        {name:"lpc",value:"1",children:[
+            {name:"lpc1",value:"11",children:[
+                {name:"lpc11",value:"111",children:null}
+            ]},
+            {name:"lpc2",value:"2",children:null},
+            {name:"lpc3",value:"3",children:null}
+        ]},
+        {name:"wsj",value:"4",children:null},
+        {name:"zxf",value:"5",children:null}
+    ];
+    sTreeView($("#ss"),objs);
+</script>
+<div xControl="treeView" xJson="objs"></div>
+</body>
+</html>
