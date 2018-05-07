@@ -203,7 +203,7 @@ $(document).ready(function(){
         if($(item).attr("xItemChooseStyle")!=null)
             treeViewItemSonChooseClass = $(item).attr("xItemChooseStyle");
         var data = eval($(item).attr("xJson"));
-        sTreeView(item,data);
+        sTreeView(item,data,treeViewItemSonClass,treeViewItemSonChooseClass);
         $.each($(item).find("p"),function(i,p){
             $(p).click(function(){
                 if($(p).parent().children("div").get(0)==null)
@@ -257,7 +257,7 @@ $(document).ready(function(){
 });
 
 var Sweetbridge = new Array();
-var SweetHashTemplate = {};
+var SweetHashTemplate = new Array();
 $(document).ready(function(){
     bridgeAdd([{"name":"lpc","age":"21"},{"name":"wsj","age":"22"},{"name":"wife","age":"21"}],"Sample");
     xDataInit();
@@ -285,10 +285,14 @@ function xDataInit()
     for(s in Sweetbridge)
     {
         $.each($("[xData="+Sweetbridge[s].name+"]"),function(i,item){
-            if(SweetHashTemplate[item]==undefined)
-                SweetHashTemplate[item]=$(item).html();
+            if($(item).data("xDataGetUrlUsedUp")==null)
+            {
+                var guid = Guid();
+                SweetHashTemplate[guid]=$(item).html();
+                $(item).data("xDataGetUrlUsedUp",guid);
+            }
             else
-                $(item).html(SweetHashTemplate[item]);
+                $(item).html(SweetHashTemplate[$(item).data("xDataGetUrlUsedUp")]);
             var model = $(item).children("[xControl=template]").get(0);
             var data = Sweetbridge[s].obj;
             var neighbor = $(model).prev("*").get(0)==null?true:$(model).prev("*").get(0);
@@ -337,10 +341,14 @@ function xDataGetUrlInit()
     $.each($("div"),function(i,item){
         if($(item).attr("xDataGetUrl")!=null)
         {
-            if(SweetHashTemplate[item]==undefined)
-                SweetHashTemplate[item]=$(item).html();
+            if($(item).data("xDataGetUrlUsedUp")==null)
+            {
+                var guid = Guid();
+                SweetHashTemplate[guid]=$(item).html();
+                $(item).data("xDataGetUrlUsedUp",guid);
+            }
             else
-                $(item).html(SweetHashTemplate[item]);
+                $(item).html(SweetHashTemplate[$(item).data("xDataGetUrlUsedUp")]);
             var model = $(item).children("[xControl=template]").get(0);
             var ori_json = AjaxGet($(item).attr("xDataGetUrl"));
             if($(item).attr("xJsonParse")==true)
@@ -395,10 +403,14 @@ function xDataGetUrlAsyncInit()
     $.each($("div"),function(i,item){
         if($(item).attr("xDataGetUrlAsync")!=null)
         {
-            if(SweetHashTemplate[item]==undefined)
-                SweetHashTemplate[item]=$(item).html();
+            if($(item).data("xDataGetUrlUsedUp")==null)
+            {
+                var guid = Guid();
+                SweetHashTemplate[guid]=$(item).html();
+                $(item).data("xDataGetUrlUsedUp",guid);
+            }
             else
-                $(item).html(SweetHashTemplate[item]);
+                $(item).html(SweetHashTemplate[$(item).data("xDataGetUrlUsedUp")]);
             var model = $(item).children("[xControl=template]").get(0);
             $.ajax({
                 type:"get",
@@ -532,3 +544,10 @@ function sTreeView(e,bindingJson,treeViewItemSonClass="treeview-item-son",treeVi
         });
     }
 }
+
+ function Guid() {
+    function S4() {
+        return (((1+Math.random())*0x10000)|0).toString(16).substring(1);
+     }
+    return (S4()+S4()+"-"+S4()+"-"+S4()+"-"+S4()+"-"+S4()+S4()+S4());
+ }
