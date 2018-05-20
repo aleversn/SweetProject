@@ -1,6 +1,13 @@
 // JavaScript Document
-$(document).ready(function(){
+$(function(){
+    UIRefresh(true);
+});
+function UIRefresh(init=false){
 	$.each($("[xControl~=checkBox]"),function(i,item){
+        if(init==true&&$(item).parents("[xControl~=template]").length>0)
+            return 0;
+        if(init==false&&$(item).parents("[xControl~=template]").length<=0)
+            return 0;
 		$(item).append('<p class="checkBox" style="font-family: Segoe MDL2; cursor: pointer;">&#xE003;</p>');
         $(item).append('<p style="margin-left: 5px;">'+$(item).attr("xContent")+'</p>');
         $(item).attr("class","checkBox")
@@ -15,14 +22,22 @@ $(document).ready(function(){
 				$($(item).children("p").get(0)).html("&#xE003;");
 				$(item).removeData("isChecked");
 			}
-		});
+        });
 	});
 	$.each($("[xControl~=searchBox]"),function(i,item){
+        if(init==true&&$(item).parents("[xControl~=template]").length>0)
+            return 0;
+        if(init==false&&$(item).parents("[xControl~=template]").length<=0)
+            return 0;
         $(item).attr("class","sinput search");
 		$(item).wrap('<div class="sinput search" style="width:'+($(item).width()/1.0+80)+'px; height:'+($(item).height()/1.0+10)+'px;"></div>');
-		$(item).after('<p class="search-icon">'+xIcon("Search")+'</p>');
+        $(item).after('<p class="search-icon">'+xIcon("Search")+'</p>');
 	});
     $.each($("[xControl=comboBox]"),function(i,item){
+        if(init==true&&$(item).parents("[xControl~=template]").length>0)
+            return 0;
+        if(init==false&&$(item).parents("[xControl~=template]").length<=0)
+            return 0;
         $(item).attr("class","combobox-item-container");
         $(item).wrap('<div class="combobox" style="width:'+$(item).width()+'px;"></div>');
         $(item).after('<p style="padding: 5px; font-family: Segoe MDL2; font-size: 12px; color: rgba(36,36,36,0.5);">&#xE70D;</p>');
@@ -56,6 +71,10 @@ $(document).ready(function(){
         $(item).fadeOut(10);
     });
     $.each($("[xControl=flipView]"),function(i,item){
+        if(init==true&&$(item).parents("[xControl~=template]").length>0)
+            return 0;
+        if(init==false&&$(item).parents("[xControl~=template]").length<=0)
+            return 0;
         $(item).attr("class","flipview");
         $(item).append('<div class="pad" style="width: 300%; height: 100%; display: flex; align-items: center;"></div>');
         $(item).append('<p class="controlbtn" style="left:0px; top:42.5%;">&#xE0E2;</p>');
@@ -87,6 +106,7 @@ $(document).ready(function(){
                 margin:"0px 0px 0px -"+$(item).width()*cur+"px"
             },speed);
         },duration);
+        resize();
         function resize()
         {
             var minImg = $(item).find("img").get(0);
@@ -128,7 +148,7 @@ $(document).ready(function(){
             if(cur>0)
                 cur--;
             else
-                cur=2;
+                cur=num-1;
             $(pad).animate({
                 margin:"0px 0px 0px -"+$(item).width()*cur+"px"
             },"easeOutQuint");
@@ -162,8 +182,15 @@ $(document).ready(function(){
                 },speed);
             },duration);
         }
+        //---------------预备事件-readyEvents--------------//
+        if($(item).attr("xReady")!=null)
+            eval($(item).attr("xReady")+"(item)");
     });
     $.each($("[xControl=scrollSticky]"),function(i,item){
+        if(init==true&&$(item).parents("[xControl~=template]").length>0)
+            return 0;
+        if(init==false&&$(item).parents("[xControl~=template]").length<=0)
+            return 0;
         var top = $(item).offset().top;
         var offset = $(item).attr("xOffset")==null?0:$(item).attr("xOffset");
         var child = item.cloneNode(true);
@@ -195,6 +222,10 @@ $(document).ready(function(){
         });
     });
     $.each($("[xControl=treeView]"),function(i,item){
+        if(init==true&&$(item).parents("[xControl~=template]").length>0)
+            return 0;
+        if(init==false&&$(item).parents("[xControl~=template]").length<=0)
+            return 0;
         $(item).html("<p></p>");
         var treeViewItemSonClass="treeview-item-son";
         var treeViewItemSonChooseClass="treeview-item-son-choose";
@@ -241,8 +272,15 @@ $(document).ready(function(){
                 });
             }
         });
+        //---------------预备事件-readyEvents--------------//
+        if($(item).attr("xReady")!=null)
+            eval($(item).attr("xReady")+"(item)");
     });
     $.each($("[xControl=linkView]"),function(i,item){
+        if(init==true&&$(item).parents("[xControl~=template]").length>0)
+            return 0;
+        if(init==false&&$(item).parents("[xControl~=template]").length<=0)
+            return 0;
         $(item).html("<a></a>");
         var treeViewItemSonClass="treeview-item-son";
         var treeViewItemSonChooseClass="treeview-item-son-choose";
@@ -254,7 +292,125 @@ $(document).ready(function(){
         sTreeView(item,data);
         $.each($(item).find("a"),function(i,a){$(a).attr("href",$(a).data("value"));});
     });
-});
+    $.each($("[xControl=flyOut]"),function(i,item){
+        if(init==true&&$(item).parents("[xControl~=template]").length>0)
+            return 0;
+        if(init==false&&$(item).parents("[xControl~=template]").length<=0)
+            return 0;
+        var flyOutCustomStyle="flyout";
+        var flyOutItemStyle="";
+        var towards = 3;
+        if($(item).attr("xCustomStyle")!=null)
+            flyOutCustomStyle = $(item).attr("xCustomStyle");
+        if($(item).attr("xItemStyle")!=null)
+            flyOutItemStyle = $(item).attr("xItemStyle");
+        if($(item).attr("xTowards")!=null)
+            towards = TowardsToNum($(item).attr("xTowards"));
+        $(item).attr("class",flyOutCustomStyle);
+        $(item).children("span").attr("class",flyOutItemStyle);
+        $(item).css("display","none");
+        var Attacher = $($(item).attr("xAttach")).get(0);
+        var guid = Guid();
+        $(Attacher).data("xAttachId",guid);
+        $(document).bind("click",function(e){
+            var target = $(e.target);
+            if((target!=item)&&($(target).data("xAttachId")!=$(Attacher).data("xAttachId")))
+            {
+                $(item).fadeOut(50);
+            }
+        });
+        $(Attacher).click(function(){
+            $(item).css("display","flex");
+            if(towards==0)
+            {
+                $(item).css("left",$(Attacher).offset().left-$(item).outerWidth()+"px");
+                $(item).css("top",$(Attacher).offset().top+"px");
+            }
+            if(towards==1)
+            {
+                $(item).css("left",$(Attacher).offset().left+($(Attacher).outerWidth()-$(item).outerWidth())/2+"px");
+                $(item).css("top",$(Attacher).offset().top-$(item).outerHeight()+"px");
+            }
+            if(towards==2)
+            {
+                $(item).css("left",$(Attacher).offset().left+$(Attacher).outerWidth()+"px");
+                $(item).css("top",$(Attacher).offset().top+"px");
+            }
+            if(towards==3)
+            {
+                $(item).css("left",$(Attacher).offset().left+($(Attacher).outerWidth()-$(item).outerWidth())/2+"px");
+                $(item).css("top",$(Attacher).offset().top+$(0).outerHeight()+"px");
+            }
+            $(item).slideDown();
+        });
+        function TowardsToNum(c="0")
+        {
+            if(c.toLowerCase()=="left"||c=="0")
+                return 0;
+            else if(c.toLowerCase()=="top"||c=="1")
+                return 1;
+            else if(c.toLowerCase()=="right"||c=="2")
+                return 2;
+            else if(c.toLowerCase()=="bottom"||c=="3")
+                return 3;
+            else
+                return 0;
+        }
+    });
+}
+
+function TreeViewRefresh(item)
+{
+    $(item).html("<p></p>");
+        var treeViewItemSonClass="treeview-item-son";
+        var treeViewItemSonChooseClass="treeview-item-son-choose";
+        if($(item).attr("xItemStyle")!=null)
+            treeViewItemSonClass = $(item).attr("xItemStyle");
+        if($(item).attr("xItemChooseStyle")!=null)
+            treeViewItemSonChooseClass = $(item).attr("xItemChooseStyle");
+        var data = eval($(item).attr("xJson"));
+        sTreeView(item,data,treeViewItemSonClass,treeViewItemSonChooseClass);
+        $.each($(item).find("p"),function(i,p){
+            $(p).click(function(){
+                if($(p).parent().children("div").get(0)==null)
+                {
+                    $.each($(item).find("p"),function(i,pt){
+                        if($(pt).parent().children("div").get(0)==null)
+                        {
+                            $(pt).parent().children("div").hide();
+                            $(pt).parent().removeData("isShowed");
+                            $(pt).attr("class",treeViewItemSonClass);
+                        }
+                    });
+                    $(p).parent().children("div").slideDown();
+                    $(p).parent().data("isShowed",1);
+                    $(p).attr("class",treeViewItemSonChooseClass);
+                }
+            });
+            if($(p).parent().children("div").get(0)!=null)
+            {
+                $(p).css('font-family','Segoe MDL2,微软雅黑');
+                $(p).data("html",$(p).html());
+                $(p).css("padding-left","5px");
+                $(p).html("&#xE0E3; "+$(p).data("html"));
+                $(p).click(function(){
+                    if($(p).data("xsxsxsxsxsxsxsxs")==null)
+                    {
+                        $(p).html("&#xE0E5; "+$(p).data("html"));
+                        $(p).data("xsxsxsxsxsxsxsxs",1);
+                    }
+                    else
+                    {
+                        $(p).html("&#xE0E3; "+$(p).data("html"));
+                        $(p).removeData("xsxsxsxsxsxsxsxs")
+                    }
+                });
+            }
+        });
+        //---------------预备事件-readyEvents--------------//
+        if($(item).attr("xReady")!=null)
+            eval($(item).attr("xReady")+"(item)");
+}
 
 var Sweetbridge = new Array();
 var SweetHashTemplate = new Array();
@@ -277,7 +433,19 @@ function bridgeAdd(obj,name)
 {
     if(name==""||obj==null)
         return 0;
-    Sweetbridge.push({obj:obj,name:name});
+    if(SweetHashTemplate[name] == true)
+    {
+        for(s in Sweetbridge)
+        {
+            if(Sweetbridge[s].name==name)
+                Sweetbridge[s].obj = obj;
+        }
+    }
+    else
+    {
+        Sweetbridge.push({obj:obj,name:name});
+        SweetHashTemplate[name] = true;
+    }
 }
 
 function xDataInit()
@@ -427,10 +595,14 @@ function xDataGetUrlAsync(item,ori_json)
 {
     if($(item).attr("xDataGetUrlAsync")!=null)
     {
-        if(SweetHashTemplate[item]==undefined)
-            SweetHashTemplate[item]=$(item).html();
+        if($(item).data("xDataGetUrlUsedUp")==null)
+        {
+            var guid = Guid();
+            SweetHashTemplate[guid]=$(item).html();
+            $(item).data("xDataGetUrlUsedUp",guid);
+        }
         else
-            $(item).html(SweetHashTemplate[item]);
+            $(item).html(SweetHashTemplate[$(item).data("xDataGetUrlUsedUp")]);
         var model = $(item).children("[xControl=template]").get(0);
         if($(item).attr("xJsonParse")==true)
             ori_json = JSON.parse(ori_json);
@@ -478,6 +650,191 @@ function xDataGetUrlAsync(item,ori_json)
     }
 }
 
+function xDataContinous(item)
+{
+    var tDiv = document.createElement("div");
+    if($(item).data("xDataGetUrlUsedUp")==null)
+    {
+        return 0;
+    }
+    else
+        $(tDiv).html(SweetHashTemplate[$(item).data("xDataGetUrlUsedUp")]);
+    var model = $(tDiv).children("[xControl=template]").get(0);
+    var data = Sweetbridge[s].obj;
+    var neighbor = $(item).children("[xControl=template]:last");
+    for(var obj in data)
+    {
+        var t = model.cloneNode(true);
+        for(var jo in data[obj])
+        {
+            if($(t).attr("xValue")==jo)
+            {
+                $(t).data("value",data[obj][jo]);
+            }
+            if($(t).html=='{x:Binding '+jo+'}')
+            {
+                $(t).html(data[obj][jo]);
+                break;
+            }
+            $.each($(t).find("*"),function(i,el){
+                if($(el).html()=='{x:Binding '+jo+'}')
+                {
+                    $(el).html(data[obj][jo]);
+                }
+                if($(el).attr("xValue")==jo)
+                {
+                    $(el).data("value",data[obj][jo]);
+                }
+            });
+        }
+        if(neighbor==true)
+        {
+            $(item).append(t);
+        }
+        else
+        {
+            $(neighbor).after(t);
+            neighbor = t;
+        }
+    }
+}
+
+function xDataGetUrlContinous(item)
+{
+    if($(item).attr("xDataGetUrl")!=null)
+    {
+        var tDiv = document.createElement("div");
+        if($(item).data("xDataGetUrlUsedUp")==null)
+        {
+            return 0;
+        }
+        else
+            $(tDiv).html(SweetHashTemplate[$(item).data("xDataGetUrlUsedUp")]);
+        var model = $(tDiv).children("[xControl=template]").get(0);
+        var ori_json = AjaxGet($(item).attr("xDataGetUrl"));
+        if($(item).attr("xJsonParse")==true)
+            ori_json = JSON.parse(ori_json);
+        var data = new Array();
+        $.each(ori_json,function(i,item){
+            data.push(item);
+        });
+        var neighbor = $(item).children("[xControl=template]:last");
+        for(var obj in data)
+        {
+            var t = model.cloneNode(true);
+            for(var jo in data[obj])
+            {
+                if($(t).attr("xValue")==jo)
+                {
+                    $(t).data("value",data[obj][jo]);
+                }
+                if($(t).html=='{x:Binding '+jo+'}')
+                {
+                    $(t).html(data[obj][jo]);
+                    break;
+                }
+                $.each($(t).find("*"),function(i,el){
+                if($(el).html()=='{x:Binding '+jo+'}')
+                {
+                    $(el).html(data[obj][jo]);
+                }
+                    if($(el).attr("xValue")==jo)
+                    {
+                        $(el).data("value",data[obj][jo]);
+                    }
+                });
+            }
+            if(neighbor==true)
+            {
+                $(item).append(t);
+            }
+            else
+            {
+                $(neighbor).after(t);
+                neighbor = t;
+            }
+        }
+    }
+    else
+    {
+        return 1;
+    }
+}
+
+function xDataGetUrlAsyncContinous(item)
+{
+    var tDiv = document.createElement("div");
+    if($(item).attr("xDataGetUrlAsync")!=null)
+    {
+        if($(item).data("xDataGetUrlUsedUp")==null)
+        {
+            return 0;
+        }
+        else
+            $(tDiv).html(SweetHashTemplate[$(item).data("xDataGetUrlUsedUp")]);
+        $.ajax({
+            type:"get",
+            url:$(item).attr("xDataGetUrlAsync"),
+            success:function(data){
+                xDataGetUrlAsyncForContinous(item,data,tDiv);
+            }
+        });
+    }
+    else
+        return 1;
+}
+
+function xDataGetUrlAsyncForContinous(item,ori_json,tDiv)
+{
+    if($(item).attr("xDataGetUrlAsync")!=null)
+    {
+        var model = $(tDiv).children("[xControl=template]").get(0);
+        if($(item).attr("xJsonParse")==true)
+            ori_json = JSON.parse(ori_json);
+        var data = new Array();
+        $.each(ori_json,function(i,item){
+            data.push(item);
+        });
+        var neighbor = $(item).children("[xControl=template]:last");
+        for(var obj in data)
+        {
+            var t = model.cloneNode(true);
+            for(var jo in data[obj])
+            {
+                if($(t).attr("xValue")==jo)
+                {
+                    $(t).data("value",data[obj][jo]);
+                }
+                if($(t).html=='{x:Binding '+jo+'}')
+                {
+                    $(t).html(data[obj][jo]);
+                    break;
+                }
+                $.each($(t).find("*"),function(i,el){
+                if($(el).html()=='{x:Binding '+jo+'}')
+                {
+                    $(el).html(data[obj][jo]);
+                }
+                    if($(el).attr("xValue")==jo)
+                    {
+                        $(el).data("value",data[obj][jo]);
+
+                    }
+                });
+            }
+            if(neighbor==true)
+            {
+                $(item).append(t);
+            }
+            else
+            {
+                $(neighbor).after(t);
+                neighbor = t;
+            }
+        }
+    }
+}
+
 function AjaxGet(url)
 {
     var r = null;
@@ -492,7 +849,7 @@ function AjaxGet(url)
     return r;
 }
 
-function AjaxGetAsync(url)
+function AjaxGetAsync(url,func=null,useArg=false)
 {
     var r = null;
     $.ajax({
@@ -500,6 +857,13 @@ function AjaxGetAsync(url)
         url:url,
         success:function(data){
             r = data;
+            if(func!=null)
+            {
+                if(useArg==true)
+                    func(data);
+                else
+                    func();
+            }
         }
     });
     return r;
@@ -545,7 +909,7 @@ function sTreeView(e,bindingJson,treeViewItemSonClass="treeview-item-son",treeVi
     }
 }
 
- function Guid() {
+function Guid() {
     function S4() {
         return (((1+Math.random())*0x10000)|0).toString(16).substring(1);
      }
