@@ -1,4 +1,4 @@
-@charset "utf-8";
+﻿@charset "utf-8";
 /* CSS Document */
 
 *{margin: 0;}
@@ -250,6 +250,7 @@ div.checkBox
 {
 	width: 200px;
 	height: 20px;
+	background: transparent;
 	border-radius: 3px;
 	border: rgba(36,36,36,0.1) solid 1px;
 	padding-left: 5px;
@@ -359,9 +360,8 @@ input.sinput.search
 .flipview:hover .controlbtn
 {
 	position: absolute;
-	min-height: 35px;
-	height: 15%;
-	padding: 5px;
+	height: 35px;
+	padding: 8px;
 	font-family: Segoe MDL2;
 	font-size: 13px;
 	background: rgba(0,0,0,0.5);
@@ -460,4 +460,41 @@ input.sinput.search
 {
     border-left: rgba(0,153,204,0.3) solid 3px;
     box-shadow: 3px 3px 5px rgba(36,36,36,0.1);
+}
+
+.flyout
+{
+	position: absolute;
+	min-width: 120px;
+	width: 120px;
+	height: auto;
+	padding: 5px 0px;
+	background: rgba(255,255,255,0.8);
+	font-family: "微软雅黑";
+	font-size: 13px;
+	border: rgba(0,0,0,0.05) solid 1px;
+	border-radius: 2px;
+	box-shadow: 1px 2px 5px rgba(36,36,36,0.2);
+	box-sizing: border-box;
+	overflow: hidden;
+	display: flex;
+	flex-direction: column;
+}
+
+.flyout span
+{
+	padding: 5px;
+	color: rgba(0,0,0,0.8);
+	cursor: pointer;
+	display: flex;
+	transition: all 0.3s;
+	-webkit-transition: all 0.3s;
+}
+.flyout span:hover
+{
+	background: rgba(0,0,0,0.1);
+}
+.flyout span:active
+{
+	transform: scale(0.9);
 }
