@@ -2,11 +2,10 @@
 $(function(){
     UIRefresh(true);
 });
+//请在document加载完毕后执行此函数//
 function UIRefresh(init=false){
 	$.each($("[xControl~=checkBox]"),function(i,item){
-        if(init==true&&$(item).parents("[xControl~=template]").length>0)
-            return 0;
-        if(init==false&&$(item).parents("[xControl~=template]").length<=0)
+        if(xUIRefreshController(init,item)==0)
             return 0;
 		$(item).append('<p class="checkBox" style="font-family: Segoe MDL2; cursor: pointer;">&#xE003;</p>');
         $(item).append('<p style="margin-left: 5px;">'+$(item).attr("xContent")+'</p>');
@@ -25,21 +24,18 @@ function UIRefresh(init=false){
         });
 	});
 	$.each($("[xControl~=searchBox]"),function(i,item){
-        if(init==true&&$(item).parents("[xControl~=template]").length>0)
-            return 0;
-        if(init==false&&$(item).parents("[xControl~=template]").length<=0)
+        if(xUIRefreshController(init,item)==0)
             return 0;
         $(item).attr("class","sinput search");
-		$(item).wrap('<div class="sinput search" style="width:'+($(item).width()/1.0+80)+'px; height:'+($(item).height()/1.0+10)+'px;"></div>');
+		$(item).wrap('<div class="sinput search" style="'+$(item).attr("style")+'"></div>');
         $(item).after('<p class="search-icon">'+xIcon("Search")+'</p>');
 	});
-    $.each($("[xControl=comboBox]"),function(i,item){
-        if(init==true&&$(item).parents("[xControl~=template]").length>0)
-            return 0;
-        if(init==false&&$(item).parents("[xControl~=template]").length<=0)
+    $.each($("[xControl~=comboBox]"),function(i,item){
+        if(xUIRefreshController(init,item)==0)
             return 0;
         $(item).attr("class","combobox-item-container");
-        $(item).wrap('<div class="combobox" style="width:'+$(item).width()+'px;"></div>');
+        $(item).wrap('<div class="combobox" style="'+$(item).attr("style")+'"></div>');
+        $(item).removeAttr("style");
         $(item).after('<p style="padding: 5px; font-family: Segoe MDL2; font-size: 12px; color: rgba(36,36,36,0.5);">&#xE70D;</p>');
         $(item).after('<p style="width: 100%; padding: 5px;">Now</p>');
         $(item).next("p").html($($(item).children("option").get(0)).html());
@@ -70,10 +66,8 @@ function UIRefresh(init=false){
         });
         $(item).fadeOut(10);
     });
-    $.each($("[xControl=flipView]"),function(i,item){
-        if(init==true&&$(item).parents("[xControl~=template]").length>0)
-            return 0;
-        if(init==false&&$(item).parents("[xControl~=template]").length<=0)
+    $.each($("[xControl~=flipView]"),function(i,item){
+        if(xUIRefreshController(init,item)==0)
             return 0;
         $(item).attr("class","flipview");
         $(item).append('<div class="pad" style="width: 300%; height: 100%; display: flex; align-items: center;"></div>');
@@ -186,23 +180,21 @@ function UIRefresh(init=false){
         if($(item).attr("xReady")!=null)
             eval($(item).attr("xReady")+"(item)");
     });
-    $.each($("[xControl=scrollSticky]"),function(i,item){
-        if(init==true&&$(item).parents("[xControl~=template]").length>0)
-            return 0;
-        if(init==false&&$(item).parents("[xControl~=template]").length<=0)
+    $.each($("[xControl~=scrollSticky]"),function(i,item){
+        if(xUIRefreshController(init,item)==0)
             return 0;
         var top = $(item).offset().top;
         var offset = $(item).attr("xOffset")==null?0:$(item).attr("xOffset");
         var child = item.cloneNode(true);
-        var width = $(item).width();
+        var width = $(item).outerWidth();
         var left = $(item).offset().left;
         var bk = $(item).attr("style");
         $(child).removeAttr("id");
         $(child).removeAttr("xControl");
         $(child).css("visibility","hidden");
-        $.each($(child).find("*"),function(i,item){$(item).removeAttr("id");});
+        $.each($(child).find("*"),function(i,item){$(item).remove();});
         $(item).before(child);
-        $(child).fadeOut(10);
+        $(child).css("display","none");
         $(document).scroll(function(){
             if(window.scrollY>top-offset)
             {
@@ -220,11 +212,15 @@ function UIRefresh(init=false){
                 $(item).attr("style",bk);
             }
         });
+        $(window).resize(function(){
+            width = $(child).outerWidth();
+            $(item).css("width",width+"px");
+        });
     });
-    $.each($("[xControl=treeView]"),function(i,item){
-        if(init==true&&$(item).parents("[xControl~=template]").length>0)
-            return 0;
-        if(init==false&&$(item).parents("[xControl~=template]").length<=0)
+    //需使用非异步Ajax加载且必须在document.ready事件之后(您可以放到window.onload()事件中或直接添加到<script>标签中)//
+    //若使用异步Ajax请在加载完成后执行UIRefresh()并且添加属性xHost为true//
+    $.each($("[xControl~=treeView]"),function(i,item){
+        if(xUIRefreshController(init,item)==0)
             return 0;
         $(item).html("<p></p>");
         var treeViewItemSonClass="treeview-item-son";
@@ -276,10 +272,8 @@ function UIRefresh(init=false){
         if($(item).attr("xReady")!=null)
             eval($(item).attr("xReady")+"(item)");
     });
-    $.each($("[xControl=linkView]"),function(i,item){
-        if(init==true&&$(item).parents("[xControl~=template]").length>0)
-            return 0;
-        if(init==false&&$(item).parents("[xControl~=template]").length<=0)
+    $.each($("[xControl~=linkView]"),function(i,item){
+        if(xUIRefreshController(init,item)==0)
             return 0;
         $(item).html("<a></a>");
         var treeViewItemSonClass="treeview-item-son";
@@ -292,10 +286,8 @@ function UIRefresh(init=false){
         sTreeView(item,data);
         $.each($(item).find("a"),function(i,a){$(a).attr("href",$(a).data("value"));});
     });
-    $.each($("[xControl=flyOut]"),function(i,item){
-        if(init==true&&$(item).parents("[xControl~=template]").length>0)
-            return 0;
-        if(init==false&&$(item).parents("[xControl~=template]").length<=0)
+    $.each($("[xControl~=flyOut]"),function(i,item){
+        if(xUIRefreshController(init,item)==0)
             return 0;
         var flyOutCustomStyle="flyout";
         var flyOutItemStyle="";
@@ -357,6 +349,78 @@ function UIRefresh(init=false){
                 return 0;
         }
     });
+    $.each($("[xControl~=rightMenu]"),function(i,item){
+        if(xUIRefreshController(init,item)==0)
+            return 0;
+        var flyOutCustomStyle="flyout";
+        var flyOutItemStyle="";
+        if($(item).attr("xCustomStyle")!=null)
+            flyOutCustomStyle = $(item).attr("xCustomStyle");
+        if($(item).attr("xItemStyle")!=null)
+            flyOutItemStyle = $(item).attr("xItemStyle");
+        $(item).attr("class",flyOutCustomStyle);
+        $(item).children("span").attr("class",flyOutItemStyle);
+        $(item).css("display","none");
+        //--------------------------------------//
+        var Attacher = $($(item).attr("xAttach"));
+        //--------------------------------------//
+        var guid = Guid();
+        $(Attacher).data("xAttachRightId",guid);
+        $(document).bind("click",function(e){
+            var target = $(e.target);
+            if((target!=item)&&($(target).data("xAttachRightId")!=$(Attacher).data("xAttachRightId")))
+            {
+                $(item).fadeOut(50);
+            }
+        });
+        $(Attacher).mouseup(function(e){
+            if(e.which!=3)
+                return 0;
+            $(item).css("display","flex");
+            if(GetMousePosition().x+$(item).outerWidth()>window.screen.availWidth)
+                $(item).css("left",GetMousePosition().x-$(item).outerWidth()+"px");
+            else
+                $(item).css("left",GetMousePosition().x+"px");
+            $(item).css("top",GetMousePosition().y+"px");
+            $(item).slideDown();
+            //返回当前吸附对象 return current attacher//
+            $(item).data("NowAttacher",e.target);
+        });
+    });
+}
+
+function xUIRefreshController(init,item)
+{
+    //初始化将刷新所有非模板控件//在此阶段非模板控件无法强制刷新//
+    if(init==true&&$(item).parents("[xControl~=template]").length>0)
+        return 0;
+    //非初始化状态//
+    if(init==false)
+    {
+        //非模板控件//
+        if($(item).parents("[xControl~=template]").length<=0)
+        {
+            if($(item).attr("xHost")=="true")
+                return 1;
+            else
+                return 0;
+        }
+        else //模板控件//默认为一次刷新//
+        {
+            if($(item).data("xControlOnceRefreshUsedUp")==null)
+            {
+                $(item).data("xControlOnceRefreshUsedUp",1);
+                return 1;
+            }
+            else
+            {
+                if($(item).attr("xHost")=="true")
+                    return 1;
+                else
+                    return 0;
+            }
+        }
+    }
 }
 
 function TreeViewRefresh(item)
@@ -914,4 +978,176 @@ function Guid() {
         return (((1+Math.random())*0x10000)|0).toString(16).substring(1);
      }
     return (S4()+S4()+"-"+S4()+"-"+S4()+"-"+S4()+"-"+S4()+S4()+S4());
- }
+}
+
+function Retop(e=null)
+{
+    if(e==null)
+    {
+        $("html,body").animate({
+            scrollTop:"0px"
+        },{duration: 500,easing: "swing"});
+    }
+    else
+    {
+        $(e).animate({
+            scrollTop:"0px"
+        },{duration: 500,easing: "swing"});
+    }
+}
+
+function warning(e,c)
+{
+	var x=$(e).prop('class');
+	var xc=$(e).text();
+	var xcolor=$(e).css('color');
+	$(e).attr('class',x+' warning-text');
+	$(e).css('color','rgba(200,50,59,1)');
+	$(e).html(c);
+	setTimeout(function(){
+		$(e).attr('class',x);
+		$(e).css('color',xcolor);
+		$(e).html(xc);
+	},3000);
+}
+
+function barWarning(s=-1,c="警告信息")
+{
+    var timer = null;
+    var icon = "&#xEB90;";
+	var background_o = "rgba(173,38,45,0.8)";
+	if(s==1)
+		{
+            background_o = "rgba(234,159,1,0.8)";
+            icon = "&#xE783;";
+		}
+	else if(s==0)
+		{
+            background_o = "rgba(25,180,110,0.8)";
+            icon = "&#xEC61;";
+		}
+	var x = document.createElement("div");
+	$(x).append("<div style='position: fixed; left: 0; top: 0; width: 100%; height: 30px; background: "+background_o+"; text-align: center; display: none; justify-content:center; align-items:center; z-index:2002;'><span style='font-family: 微软雅黑; font-size:12px; color: rgba(242,242,242,0.8); display: flex; justify-content:center; align-items:center; z-index:999;'><span style='margin-top:3px; margin-right:5px; font-family:Segoe MDL2;'>"+icon+"</span> "+c+"</span></div>");
+	$("body").append(x);
+    $(x).find("div").slideDown();
+    $(x).find("div").css("display","flex");
+	timer = setInterval(function(){
+		var stimer = null;
+		$(x).find("div").fadeOut();
+		stimer = setInterval(function(){
+			$(x).empty();
+			clearInterval(stimer);
+		},1000);
+		clearInterval(timer);
+	},3000);
+}
+
+//s//-1-错误//0-成功//1-警告//2-默认//
+//title//信息框标题//
+//content//信息框内容//
+//theme//信息框主题//light-亮色调//dark-暗色调//
+function sInfoBox(s=2,content="",title="提示",theme="light")
+{
+    var themeColor = theme=="dark"?" dark":"";
+    if($("#s_info_box").length<=0)
+    {
+        $(document.body).append('<div id="s_info_box" style="position: fixed; left: 0px; top: 0px; width: 100%; height: 100%; background: rgba(255,255,255,0.5); -webkit-backdrop-filter:blur(15px); display: flex; justify-content: center; align-items: center;"><div class="sinfo-box" style="display: flex; flex-direction: column; justify-content: space-between; align-items: center; z-index:2001;"><div class="title-bar"><i id="s_info_icon" style="color: rgba(255,255,255,1); text-align: center;">&#xE783;</i><span id="s_info_title" style="margin-left: 5px; font-family: 微软雅黑; font-size: 13px; color: rgba(255,255,255,1); text-align: center;">提示</span></div><span id="s_info_content" style="width: 100%; margin-top: 15px; font-family: 微软雅黑; font-size: 15px; text-indent: 5px; text-align: left;">Content</span><button class="sbutton black glass" style="width: 150px; margin: 15px;" onClick="$(\'#s_info_box\').fadeOut();">关闭</button></div></div>');
+    }
+	$("#s_info_box").css('display','flex');
+    if(themeColor==" dark")
+        $("#s_info_box").css("background","rgba(0,0,0,0.6)");
+	if(s==1)
+    {
+        $($("#s_info_box").children("div").get(0)).attr("class","sinfo-box brown"+themeColor);
+        $('#s_info_icon').html('&#xEC61;');
+        $("#s_info_box").find("button").attr("class","sbutton brown glass");
+    }
+	else if(s==0)
+    {
+        $($("#s_info_box").children("div").get(0)).attr("class","sinfo-box green"+themeColor);
+        $('#s_info_icon').html('&#xEC61;');
+        $("#s_info_box").find("button").attr("class","sbutton green glass");
+    }
+	else if(s==-1)
+    {
+        $($("#s_info_box").children("div").get(0)).attr("class","sinfo-box red"+themeColor);
+        $('#s_info_icon').html('&#xEB90;');
+        $("#s_info_box").find("button").attr("class","sbutton red glass");
+    }
+    else if(s==2)
+    {
+        $($("#s_info_box").children("div").get(0)).attr("class","sinfo-box"+themeColor);
+        $('#s_info_icon').html('&#xE946;');
+        if(themeColor==" dark")
+            $("#s_info_box").find("button").attr("class","sbutton dark");
+    }
+    $("#s_info_title").html(title);
+	$("#s_info_content").html(content);
+}
+
+//content-信息框内容//
+//f-执行确定操作函数//
+//t1-确定按钮标题//
+//t2-取消按钮标题//
+//title-信息框标题//
+//theme-主题//red//green//brown//red dark//green dark//brown dark//dark//
+function sJudgeBox(content,f,t1='确认',t2='取消',title="信息",theme="")
+{
+    if($("#s_judge_box").length<=0)
+    {
+        $(document.body).append('<div id="s_judge_box" style="position: fixed; left: 0px; top: 0px; width: 100%; height: 100%; background: rgba(255,255,255,0.5); -webkit-backdrop-filter:blur(15px); display: flex; justify-content: center; align-items: center;"><div class="sinfo-box" style="display: flex; flex-direction: column; justify-content: space-between; align-items: center; z-index:2001;"><div class="title-bar"><i id="s_judge_icon" style="color: rgba(255,255,255,1); text-align: center;">&#xE783;</i><span id="s_judge_title" style="margin-left: 5px; font-family: 微软雅黑; font-size: 13px; color: rgba(255,255,255,1); text-align: center;">提示</span></div><span id="s_judge_content" style="width: 100%; margin-top: 15px; font-family: 微软雅黑; font-size: 15px; text-indent: 5px; text-align: left;">Content</span><div style="width: 100%; margin-top: 15px; padding: 5px; box-sizing: border-box; display: flex; justify-content: space-between;"><button id="s_judge_confirm" class="sbutton blue" style="width: 100%; margin-right: 2.5px;">确认</button><button id="s_judge_cancel" class="sbutton black" style="width: 100%; margin-left: 2.5px;">取消</button></div></div></div>');
+    }
+    if(theme.indexOf("dark")>=0)
+        $("#s_judge_box").css("background","rgba(0,0,0,0.6)");
+	$("#s_judge_box").css('display','flex');
+    $($("#s_judge_box").children("div").get(0)).attr("class","sinfo-box "+theme);
+    $($("#s_judge_box").find("button").get(0)).attr("class","sbutton "+theme.split(' ')[0]);
+	$("#s_judge_confirm").html(t1);
+	$("#s_judge_cancel").html(t2);
+    $("#s_judge_title").html(title);
+	$("#s_judge_content").html(content);
+		
+	$("#s_judge_confirm").unbind();
+	$("#s_judge_confirm").click(function(){
+		f();
+		$('#s_judge_box').fadeOut();
+	});
+	$("#s_judge_cancel").click(function(){
+		$('#s_judge_box').fadeOut();
+	});
+}
+
+//多扳机触发器//
+function sTrigger(func=null,attach,sum=2)
+{
+    $(attach).click(function(){
+        if($(attach).data("sTrigger_status_el")==null)
+            $(attach).data("sTrigger_status_el",1);
+        else
+        {
+            if($(attach).data("sTrigger_status_el")<sum-1)
+                $(attach).data("sTrigger_status_el",$(attach).data("sTrigger_status_el")+1);
+            else
+                $(attach).data("sTrigger_status_el",0);
+        }
+        func($(attach).data("sTrigger_status_el"));
+    });
+    var r = $(attach).data("sTrigger_status_el");
+    r == null?0:r;
+    return r;
+}
+
+var sMousePosition = {x:0,y:0};
+var sMousePositionWithOutScroller = {x:0,y:0};
+$(document).mousemove(function(e){sMousePosition.x=e.pageX;sMousePosition.y=e.pageY;
+                                sMousePositionWithOutScroller.x=e.originalEvent.x;
+                                sMousePositionWithOutScroller.y=e.originalEvent.y;});
+function GetMousePosition()
+{
+    return sMousePosition;
+}
+
+function GetMousePositionVisual()
+{
+    return sMousePositionWithOutScroller;
+}

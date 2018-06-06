@@ -44,7 +44,7 @@
     </div>
     <p>2</p>
 </div>
-<div xControl="flipView">
+<div xControl="flipView" style="height: 300px;">
     <img alt="" src="res/10.jpg"/>
     <img alt="" src="res/158.jpg"/>
     <img alt="" src="res/159.jpg"/>
@@ -67,5 +67,65 @@
     sTreeView($("#ss"),objs);
 </script>
 <div xControl="treeView" xJson="objs"></div>
+<div xControl="flyOut" xAttach="#flyout" xTowards="right">
+	<span>Option1</span>
+	<span>Option2</span>
+	<span>Option3</span>
+</div>
+<button id="flyout" style="width: 120px;">FlyOut</button>
+<!--
+<div style="width: 100%; display: flex; justify-content: flex-start; align-items: center; overflow: hidden;">
+	<img alt="" src="res/10.jpg" style="min-width: 100%; width: 100%; height: auto;"/>
+    <img alt="" src="res/158.jpg" style="min-width: 100%; width: 100%; height: auto;"/>
+    <img alt="" src="res/159.jpg" style="min-width: 100%; width: 100%; height: auto;"/>
+</div>
+-->
+<div xControl="rightMenu" xAttach="button">
+	<span>Option1</span>
+	<span>Option2</span>
+	<span>Option3</span>
+</div>
+<!--
+<div class="s-progressring">
+    <p></p>
+    <p class="l1"></p>
+    <p class="l2"></p>
+    <p class="l3"></p>
+    <p class="l4"></p>
+    <p class="l5"></p>
+</div>
+<div class="s-progressring l">
+    <p></p>
+    <p class="l1"></p>
+    <p class="l2"></p>
+    <p class="l3"></p>
+    <p class="l4"></p>
+    <p class="l5"></p>
+</div>
+<div class="s-progressring m">
+    <p></p>
+    <p class="l1"></p>
+    <p class="l2"></p>
+    <p class="l3"></p>
+    <p class="l4"></p>
+    <p class="l5"></p>
+</div>
+<div class="s-progressring s">
+    <p></p>
+    <p class="l1"></p>
+    <p class="l2"></p>
+    <p class="l3"></p>
+    <p class="l4"></p>
+    <p class="l5"></p>
+</div>
+<div class="s-progressring xs">
+    <p></p>
+    <p class="l1"></p>
+    <p class="l2"></p>
+    <p class="l3"></p>
+    <p class="l4"></p>
+    <p class="l5"></p>
+</div>
+-->
 </body>
 </html>
